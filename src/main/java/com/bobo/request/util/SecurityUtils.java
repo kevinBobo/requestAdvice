@@ -12,6 +12,9 @@ public class SecurityUtils {
     public static String encry(String str){
         return aes.encryptBase64(str);
     }
+    public static byte[] encry(byte[] b){
+        return aes.encryptBase64(b).getBytes();
+    }
 
     public static String decry(String str){
         return aes.decryptStr(str);

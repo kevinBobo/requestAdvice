@@ -9,11 +9,7 @@ import javax.crypto.SecretKey;
 public class EncryptionUtil {
 
     public static void main(String[] args) {
-        String json = "{\n" +
-                "  \"id\": \"1\",\n" +
-                "  \"username\": \"bobo\",\n" +
-                "  \"age\": \"18\"\n" +
-                "}";
+        String json = "1";
         byte[] key = SecureUtil.generateKey(SymmetricAlgorithm.AES.getValue(),"0CoJUm6Qyw8W8jud".getBytes()).getEncoded();
         AES aes = SecureUtil.aes(key);
         String s1 = aes.encryptBase64(json);

@@ -1,6 +1,8 @@
 package com.bobo.request.filter;
 
 import cn.hutool.core.io.IoUtil;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.bobo.request.util.SecurityUtils;
 
 import javax.servlet.ReadListener;
@@ -22,8 +24,11 @@ public class SecurityServletRequest  extends HttpServletRequestWrapper {
     @Override
     public ServletInputStream getInputStream() throws IOException {
         ServletInputStream inputStream = super.getInputStream();
-        byte[] body = SecurityUtils.decry(IoUtil.read(inputStream, StandardCharsets.UTF_8)).getBytes();
-        return new BodyInputStream(body);
+        String encryBody = IoUtil.read(inputStream, StandardCharsets.UTF_8);
+        JSONObject jsonObject = JSON.parseObject(encryBody);
+        jsonObject.put("data", JSON.parse(SecurityUtils.decry(jsonObject.getString("data"))));
+        String s = jsonObject.toJSONString();
+        return new BodyInputStream(s.getBytes());
     }
 
     private static class BodyInputStream extends ServletInputStream {

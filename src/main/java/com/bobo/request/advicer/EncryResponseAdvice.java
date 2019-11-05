@@ -1,8 +1,8 @@
 package com.bobo.request.advicer;
 
+import com.alibaba.fastjson.JSON;
 import com.bobo.request.util.SecurityUtils;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.bobo.request.vo.BaseResponse;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.MediaType;
 import org.springframework.http.server.ServerHttpRequest;
@@ -13,8 +13,6 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 //@ControllerAdvice
 public class EncryResponseAdvice implements ResponseBodyAdvice {
 
-    private ObjectMapper objectMapper = new ObjectMapper();
-
     @Override
     public boolean supports(MethodParameter returnType, Class converterType) {
         return true;
@@ -22,10 +20,11 @@ public class EncryResponseAdvice implements ResponseBodyAdvice {
 
     @Override
     public Object beforeBodyWrite(Object body, MethodParameter returnType, MediaType selectedContentType, Class selectedConverterType, ServerHttpRequest request, ServerHttpResponse response) {
-        try {
-            return SecurityUtils.encry(objectMapper.writeValueAsString(body));
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
+        if (body instanceof BaseResponse) {
+            BaseResponse baseResponse = (BaseResponse) body;
+            Object data = baseResponse.getData();
+            baseResponse.setData(SecurityUtils.encry(JSON.toJSONString(data)));
+            return baseResponse;
         }
         return body;
     }
